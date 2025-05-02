@@ -46,6 +46,7 @@ action "setup_surfnet" "svm::setup_surfnet" {
         public_key = signer.sender.public_key
         token = variable.mint
         amount = variable.amount
+        token_program = variable.token_program
     }
 }
 

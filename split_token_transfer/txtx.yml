@@ -7,7 +7,7 @@ runbooks:
     location: runbooks/deployment
   - name: send-tokens
     description: Send tokens to the pool
-    location: send-tokens.tx
+    location: runbooks/send-tokens.tx
 environments:
   localnet:
       network_id: localnet
