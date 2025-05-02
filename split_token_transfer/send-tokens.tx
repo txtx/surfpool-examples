@@ -1,0 +1,79 @@
+addon "svm" {
+    rpc_api_url = input.rpc_api_url
+    network_id = input.network_id
+}
+
+signer "sender" "svm::secret_key" {
+    keypair_json = input.payer_keypair_json
+}
+
+variable "program" {
+    description = "The program to deploy"
+    value = svm::get_program_from_anchor_project("split_token_transfer")
+}
+
+variable "mint" {
+    description = "The mint address of the token to transfer. The default is USDC"
+    value = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+    editable = true
+}
+
+variable "token_program" {
+    description = "The token program address. 'TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA' for Token (default), 'TokenzQdBNbLqP5VEhdkAS6EPFLC1PHnBqCXEpPxuEb' for Token2022."
+    value = "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+}
+
+variable "recipient_1" {
+    description = "The public key of the first recipient"
+    value = "2pAG1h2hD2CwmGY4zVjBsNyti8aBQUAtgky4xMqATTnQ"
+    editable = true
+}
+
+variable "recipient_2" {
+    description = "The public key of the second recipient"
+    value = "8LwMrFezkHozAyGX7EnTWS56o7KfhqfCVSWzDRHmBYan"
+    editable = true
+}
+
+variable "amount" {
+    description = "The amount of tokens to transfer. This amount will be split between the two recipients"
+    value = 1000
+    editable = true
+}
+
+action "setup_surfnet" "svm::setup_surfnet" {
+    set_token_account {
+        public_key = signer.sender.public_key
+        token = variable.mint
+        amount = variable.amount
+    }
+}
+
+action "call" "svm::process_instructions" {
+	signers = [signer.sender]
+    instruction {
+        program_idl = variable.program.idl
+        instruction_name = "split_token_transfer"
+        instruction_args = [variable.amount]
+        sender {
+            public_key = signer.sender.public_key
+        }
+        recipient_1 {
+            public_key = variable.recipient_1
+        }
+        recipient_2 {
+            public_key = variable.recipient_2
+        }
+        mint {
+            public_key = variable.mint
+        }
+        token_program {
+            public_key = variable.token_program
+        }
+    }
+}
+output "signature" {
+    description = "The signature of the transaction"
+    value = action.call.signature
+}
+

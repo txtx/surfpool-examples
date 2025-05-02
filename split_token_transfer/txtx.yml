@@ -1,0 +1,22 @@
+---
+name: surfpool-demo
+id: surfpool-demo
+runbooks:
+  - name: deployment
+    description: Deploy programs
+    location: runbooks/deployment
+  - name: send-tokens
+    description: Send tokens to the pool
+    location: send-tokens.tx
+environments:
+  localnet:
+      network_id: localnet
+      rpc_api_url: http://127.0.0.1:8899
+      payer_keypair_json: ~/.config/solana/id.json
+      authority_keypair_json: ~/.config/solana/id.json
+  devnet:
+      network_id: devnet
+      rpc_api_url: https://api.devnet.solana.com
+      payer_keypair_json: ~/.config/solana/id.json
+      authority_keypair_json: ~/.config/solana/id.json
+

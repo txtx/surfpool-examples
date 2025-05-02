@@ -1,0 +1,27 @@
+[package]
+name = "split_token_transfer"
+version = "0.1.0"
+description = "Created with Anchor"
+edition = "2021"
+authors = [""]
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "split_token_transfer"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+
+[dependencies]
+anchor-lang = { version = "0.31.1", features = ["event-cpi", "init-if-needed"] }
+anchor-spl = "0.31.1"
+autocfg = "1.1.0"
+hashbrown = "0.14"
+once_cell = "1.19"
+unicode-ident = "1.0"
+
