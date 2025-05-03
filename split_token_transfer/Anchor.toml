@@ -6,8 +6,7 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-hello_again_world = "5bGFELeNyFmaxpdDHreMkpvUatakT7rMML3BmJCgDLVb"
-hello_world = "4fgAKiruGFXswxNFWjrVfA7w8aQeRHj2mTKTZH4VTz2X"
+split_token_transfer = "5cungpYw9gdabacb6kBT2nkYkd21rHrXdKSiBXZATRU9"
 
 [registry]
 url = "https://api.apr.dev"
