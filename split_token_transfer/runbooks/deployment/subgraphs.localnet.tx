@@ -1,9 +1,0 @@
-
-action "split_token_transfer_split_transfer_event" "svm::deploy_subgraph" {
-    program_id = action.deploy_split_token_transfer.program_id
-    program_idl = action.deploy_split_token_transfer.program_idl
-    block_height = 0 // action.deploy_split_token_transfer.block_height
-    event {
-        name = "SplitTransferEvent"
-    }
-}
