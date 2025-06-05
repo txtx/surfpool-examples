@@ -1,0 +1,31 @@
+{
+  "name": "client",
+  "type": "commonjs",
+  "main": "src/generated/index.ts",
+  "scripts": {
+    "test": "yarn test --timeout 100000",
+    "solita": "solita",
+    "pump-test": "ts-node src/arb_pump_test.ts",
+    "dlmm-test": "ts-node src/arb_dlmm_test.ts"
+
+  },
+  "devDependencies": {
+    "@metaplex-foundation/beet-solana": "^0.4.1",
+    "@metaplex-foundation/solita": "^0.20.1",
+    "@types/bun": "^1.2.13",
+    "@types/jest": "^29.5.14",
+    "mocha": "^10.8.2",
+    "ts-mocha": "^10.1.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@solana/spl-token": "^0.3.8",
+    "@solana/web3.js": "^1.98.2",
+    "@types/mocha": "^10.0.10",
+    "@types/bn.js": "5.1.6"
+  }
+}

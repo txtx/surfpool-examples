@@ -1,0 +1,15 @@
+################################################################
+# Manage program deployment through Crypto Infrastructure as Code
+################################################################
+
+addon "svm" {
+    rpc_api_url = input.rpc_api_url
+    network_id = input.network_id
+}
+
+action "deploy_swap_program" "svm::deploy_program" {
+    description = "Deploy swap_program program"
+    program = svm::get_program_from_native_project("swap_program")
+    authority = signer.authority
+    payer = signer.payer
+}

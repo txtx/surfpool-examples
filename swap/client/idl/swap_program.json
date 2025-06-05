@@ -1,0 +1,399 @@
+{
+  "version": "0.1.0",
+  "name": "swap_program",
+  "instructions": [
+    {
+      "name": "PumpAMMSwap",
+      "accounts": [
+        {
+          "name": "signerAcc",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "Fee payer account"
+          ]
+        },
+        {
+          "name": "baseMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "SOL/USDC mint address"
+          ]
+        },
+        {
+          "name": "feeCollectorAcc",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Fee collector account"
+          ]
+        },
+        {
+          "name": "baseMintAcc",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Base mint ata account"
+          ]
+        },
+        {
+          "name": "tokenProgramId",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Token program account"
+          ]
+        },
+        {
+          "name": "systemProgramId",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "System program account"
+          ]
+        },
+        {
+          "name": "associatedTokenProgramId",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Associated token program account"
+          ]
+        },
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "mint account"
+          ]
+        },
+        {
+          "name": "userMintAcc",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "user mint ata account"
+          ]
+        },
+        {
+          "name": "pumpProgramId",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Pump program account"
+          ]
+        },
+        {
+          "name": "pumpGlobalConfigAcc",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Pump global config account"
+          ]
+        },
+        {
+          "name": "pumpEventAuthorityAcc",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Pump event authority account"
+          ]
+        },
+        {
+          "name": "protocolFeeRecipient",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Pump fee wallet account"
+          ]
+        },
+        {
+          "name": "poolAcc",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Pool pool account"
+          ]
+        },
+        {
+          "name": "poolBaseTokenAcc",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Pool token vault account"
+          ]
+        },
+        {
+          "name": "poolQuoteTokenAcc",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Pool sol vault account"
+          ]
+        },
+        {
+          "name": "protocolFeeRecipientTokenAcc",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "fee token wallet account"
+          ]
+        },
+        {
+          "name": "coinCreatorVaultAta",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Pool coin creator vault ata account"
+          ]
+        },
+        {
+          "name": "coinCreatorVaultAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Pool coin creator vault authority account"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "arbitrageIxData",
+          "type": {
+            "defined": "ArbitrageIxData"
+          }
+        }
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 0
+      }
+    },
+    {
+      "name": "DLMMSwap",
+      "accounts": [
+        {
+          "name": "signerAcc",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "Fee payer account"
+          ]
+        },
+        {
+          "name": "baseMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "SOL/USDC mint address"
+          ]
+        },
+        {
+          "name": "feeCollectorAcc",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Fee collector account"
+          ]
+        },
+        {
+          "name": "baseMintAcc",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "Base mint ata account"
+          ]
+        },
+        {
+          "name": "tokenProgramId",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Token program account"
+          ]
+        },
+        {
+          "name": "systemProgramId",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "System program account"
+          ]
+        },
+        {
+          "name": "associatedTokenProgramId",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "Associated token program account"
+          ]
+        },
+        {
+          "name": "mint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "mint account"
+          ]
+        },
+        {
+          "name": "userMintAcc",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "user mint ata account"
+          ]
+        },
+        {
+          "name": "dlmmProgramId",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "dlmm program account"
+          ]
+        },
+        {
+          "name": "dlmmEventAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "dlmm program account"
+          ]
+        },
+        {
+          "name": "lbPair",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "dlmm pool account"
+          ]
+        },
+        {
+          "name": "reserveX",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "x token account"
+          ]
+        },
+        {
+          "name": "reserveY",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "y token account"
+          ]
+        },
+        {
+          "name": "oracle",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "oracle token account"
+          ]
+        },
+        {
+          "name": "bin1",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "bin 1 token account"
+          ]
+        },
+        {
+          "name": "bin2",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "bin 2 token account"
+          ]
+        },
+        {
+          "name": "bin3",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "bin 3 token account"
+          ]
+        }
+      ],
+      "args": [
+        {
+          "name": "arbitrageIxData",
+          "type": {
+            "defined": "ArbitrageIxData"
+          }
+        }
+      ],
+      "discriminant": {
+        "type": "u8",
+        "value": 1
+      }
+    }
+  ],
+  "types": [
+    {
+      "name": "ArbitrageIxData",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "dex",
+            "type": {
+              "defined": "SupportDex"
+            }
+          },
+          {
+            "name": "maxBinToProcess",
+            "type": "u64"
+          },
+          {
+            "name": "minProfitThreshold",
+            "type": "u64"
+          },
+          {
+            "name": "noFailure",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SupportDex",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Pump"
+          },
+          {
+            "name": "PumpAmm"
+          },
+          {
+            "name": "RaydiumAmm"
+          },
+          {
+            "name": "RaydiumCP"
+          },
+          {
+            "name": "RaydiumCLMM"
+          },
+          {
+            "name": "DLMM"
+          },
+          {
+            "name": "WhirlPool"
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "origin": "shank",
+    "address": "D7Nv2Yt9i7r1xSGgTZo9zGHgZ8wwiAX13nFodBXdpox4",
+    "binaryVersion": "0.4.3",
+    "libVersion": "0.4.3"
+  }
+}
