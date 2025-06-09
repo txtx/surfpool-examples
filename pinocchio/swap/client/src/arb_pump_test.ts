@@ -22,54 +22,54 @@ import {
     COMMON_PROGRAM_IDS, createComputeUnitLimitInstruction,
 } from './utils';
 
-// 连接到本地测试网
+// Connect to local testnet
 const connection = new Connection('http://127.0.0.1:8899', 'confirmed');
 
-// 这些函数已移至 utils.ts
+// These functions have been moved to utils.ts
 
-// 主函数
+// Main function
 async function main() {
     try {
-        console.log('=== 开始 Pump AMM 测试 ===');
+        console.log('=== Starting Pump AMM Test ===');
         
-        // 1. 加载密钥对
+        // 1. Load keypair
         const payer = await getOrCreateKeypair('~/.config/solana/id.json');
-        console.log(`使用钱包地址: ${payer.publicKey.toBase58()}`);
+        console.log(`Using wallet address: ${payer.publicKey.toBase58()}`);
 
-        // 2. 确保有足够的SOL
+        // 2. Ensure sufficient SOL
         await ensureSufficientBalance(connection, payer, 10);
 
-        // 3. 设置代币信息
-        const baseMint = COMMON_TOKENS.SOL; // 原生SOL包装代币
-        const testMint = new PublicKey('FtTSDNLD5mMLn3anqEQpy44cRdrtAJRrLX2MKXxfpump'); // 测试代币
+        // 3. Setup token information
+        const baseMint = COMMON_TOKENS.SOL; // Native SOL wrapped token
+        const testMint = new PublicKey('FtTSDNLD5mMLn3anqEQpy44cRdrtAJRrLX2MKXxfpump'); // Test token
 
-        // 4. 批量创建ATA
+        // 4. Batch create ATAs
         const ataMap = await setupATAs(connection, payer, [baseMint, testMint]);
         const userBaseMintAcc = ataMap.get(baseMint.toBase58())!;
         const userTestMintAcc = ataMap.get(testMint.toBase58())!;
 
-        console.log("用户 SOL ATA:", userBaseMintAcc.toBase58());
-        console.log("用户测试代币 ATA:", userTestMintAcc.toBase58());
+        console.log("User SOL ATA:", userBaseMintAcc.toBase58());
+        console.log("User test token ATA:", userTestMintAcc.toBase58());
 
-        // 模拟Pump AMM参数
+        // Simulate Pump AMM parameters
         const pumpProgramId = new PublicKey('pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA');
-        const pumpGlobalConfigAcc = new PublicKey('ADyA8hdefvWN2dbGGWFotbzWxrAvLW83WG6QCVXvJKqw'); // 示例
-        const pumpEventAuthorityAcc = new PublicKey('GS4CU59F31iL7aR2Q8zVS8DRrcRnXX1yjQ66TqNVQnaR'); // 示例
-        const protocolFeeRecipient = new PublicKey('JCRGumoE9Qi5BBgULTgdgTLjSgkCMSbF62ZZfGs84JeU'); // 示例
+        const pumpGlobalConfigAcc = new PublicKey('ADyA8hdefvWN2dbGGWFotbzWxrAvLW83WG6QCVXvJKqw'); // Example
+        const pumpEventAuthorityAcc = new PublicKey('GS4CU59F31iL7aR2Q8zVS8DRrcRnXX1yjQ66TqNVQnaR'); // Example
+        const protocolFeeRecipient = new PublicKey('JCRGumoE9Qi5BBgULTgdgTLjSgkCMSbF62ZZfGs84JeU'); // Example
 
-        // 模拟池账户
-        const poolAcc = new PublicKey('6j6b2bG7MTbWjAgCBv4sLEFevqvRhiHAWKpe6Dz7PJnj'); // 示例
-        const poolBaseTokenAcc = new PublicKey('HA4w7y2zGiMVttUFZe9HdDzbNpZh2YBv4MNMr2tsBWnq'); // 示例
-        const poolQuoteTokenAcc = new PublicKey('B4YCF385oipgk4QAQM4q9zzPLPS8whW7NZ2Ebg1Wrros'); // 示例
-        const protocolFeeRecipientTokenAcc = new PublicKey('DWpvfqzGWuVy9jVSKSShdM2733nrEsnnhsUStYbkj6Nn'); // 示例
-        const coinCreatorVaultAta = new PublicKey('CnaQqEc5sbbFGNhn4Hde8b63CUPoYGKPuUNzfhbfU3UN'); // 示例
-        const coinCreatorVaultAuthority = new PublicKey('2oY61WmvjLiBDe6A8n5w3hTsqt25upisRcbbXs5xRg95'); // 示例
+        // Simulate pool accounts
+        const poolAcc = new PublicKey('6j6b2bG7MTbWjAgCBv4sLEFevqvRhiHAWKpe6Dz7PJnj'); // Example
+        const poolBaseTokenAcc = new PublicKey('HA4w7y2zGiMVttUFZe9HdDzbNpZh2YBv4MNMr2tsBWnq'); // Example
+        const poolQuoteTokenAcc = new PublicKey('B4YCF385oipgk4QAQM4q9zzPLPS8whW7NZ2Ebg1Wrros'); // Example
+        const protocolFeeRecipientTokenAcc = new PublicKey('DWpvfqzGWuVy9jVSKSShdM2733nrEsnnhsUStYbkj6Nn'); // Example
+        const coinCreatorVaultAta = new PublicKey('CnaQqEc5sbbFGNhn4Hde8b63CUPoYGKPuUNzfhbfU3UN'); // Example
+        const coinCreatorVaultAuthority = new PublicKey('2oY61WmvjLiBDe6A8n5w3hTsqt25upisRcbbXs5xRg95'); // Example
 
-        // 5. 创建账户参数
+        // 5. Create account parameters
         const accounts: PumpAMMSwapInstructionAccounts = {
             signerAcc: payer.publicKey,
             baseMint: baseMint,
-            feeCollectorAcc: payer.publicKey, // 使用用户作为费用收集器
+            feeCollectorAcc: payer.publicKey, // Use user as fee collector
             baseMintAcc: userBaseMintAcc,
             tokenProgramId: COMMON_PROGRAM_IDS.TOKEN_PROGRAM,
             systemProgramId: COMMON_PROGRAM_IDS.SYSTEM_PROGRAM,
@@ -88,7 +88,7 @@ async function main() {
             coinCreatorVaultAuthority,
         };
 
-        // 6. 创建指令数据
+        // 6. Create instruction data
         const arbArgs: PumpAMMSwapInstructionArgs = {
             arbitrageIxData: {
                 dex: SupportDex.PumpAmm,
@@ -98,24 +98,24 @@ async function main() {
             },
         };
 
-        // 7. 创建指令
+        // 7. Create instruction
         const ix = createPumpAMMSwapInstruction(accounts, arbArgs);
 
-        // 手动修改指令数据，确保使用指令识别码 0
+        // Manually modify instruction data to ensure instruction code 0 is used
         ix.data = Buffer.from([0, ...ix.data.slice(1)]);
 
-        console.log('创建的 Pump AMM 指令:', {
+        console.log('Created Pump AMM instruction:', {
             programId: ix.programId.toBase58(),
             dataLength: ix.data.length,
             accountsCount: ix.keys.length,
         });
 
-        // 8. 创建交易并发送
+        // 8. Create and send transaction
         const limitIx = createComputeUnitLimitInstruction(400000);
         // const priceIx = createComputeUnitPriceInstruction(10000);
         const arbTransaction = new Transaction();
-        arbTransaction.add(limitIx,  ix);
-        console.log('发送 Pump AMM 交易...');
+        arbTransaction.add(limitIx, ix);
+        console.log('Sending Pump AMM transaction...');
         const txSignature = await sendAndConfirmTransaction(
             connection,
             arbTransaction,
@@ -123,39 +123,39 @@ async function main() {
             {commitment: 'confirmed', skipPreflight: true}
         );
 
-        console.log(`✅ Pump AMM 交易成功: ${txSignature}`);
-        console.log(`🔍 查看交易: https://explorer.solana.com/tx/${txSignature}?cluster=custom&customUrl=http://localhost:8899`);
+        console.log(`✅ Pump AMM transaction successful: ${txSignature}`);
+        console.log(`🔍 View transaction: https://explorer.solana.com/tx/${txSignature}?cluster=custom&customUrl=http://localhost:8899`);
 
     } catch (error) {
-        console.error('❌ 执行 Pump AMM 交易时出错:', error);
+        console.error('❌ Error executing Pump AMM transaction:', error);
         
-        // 输出详细错误信息
+        // Output detailed error information
         if (error instanceof Error) {
-            // console.error('错误详情:', error.message);
-            console.error('错误堆栈:', error.stack);
+            // console.error('Error details:', error.message);
+            console.error('Error stack:', error.stack);
         }
     }
 }
 
 /**
- * 主函数入口
+ * Main function entry
  */
 async function mainEntry() {
-    console.log('🚀 启动 Pump AMM 程序...');
-    console.log('程序 ID:', PROGRAM_ID.toBase58());
-    console.log('Pump AMM 程序 ID:', COMMON_PROGRAM_IDS.PUMP_AMM.toBase58());
+    console.log('🚀 Starting Pump AMM program...');
+    console.log('Program ID:', PROGRAM_ID.toBase58());
+    console.log('Pump AMM Program ID:', COMMON_PROGRAM_IDS.PUMP_AMM.toBase58());
     
     await main();
     
-    console.log('✨ Pump AMM 程序执行完成');
+    console.log('✨ Pump AMM program execution completed');
 }
 
-// 运行主函数
+// Run main function
 if (require.main === module) {
     mainEntry().catch(console.error);
 }
 
-// 导出函数供其他模块使用
+// Export functions for use by other modules
 export {
     main as testPumpAMMArbitrage,
-}; 
+};

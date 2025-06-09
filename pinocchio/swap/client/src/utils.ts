@@ -1,3 +1,5 @@
+import * as os from 'os';
+import * as path from 'path';
 import {
     Connection,
     Keypair,
@@ -19,48 +21,54 @@ import {
 import * as fs from 'fs';
 
 /**
- * 从文件加载或创建新的密钥对
- * @param path 密钥对文件路径
+ * Load or create new keypair from file
+ * @param filePath Path to keypair file
  */
-export async function getOrCreateKeypair(path: string): Promise<Keypair> {
+export async function getOrCreateKeypair(filePath: string): Promise<Keypair> {
     try {
-        if (fs.existsSync(path)) {
-            const keypairData = JSON.parse(fs.readFileSync(path, 'utf-8'));
+        // Resolve '~' to home directory
+        const resolvedPath = filePath.replace(/^~/, os.homedir());
+        const absolutePath = path.resolve(resolvedPath);
+
+        if (fs.existsSync(absolutePath)) {
+            const keypairData = JSON.parse(fs.readFileSync(absolutePath, 'utf-8'));
             return Keypair.fromSecretKey(new Uint8Array(keypairData));
         } else {
+            console.log(`Keypair file not found at ${absolutePath}, generating new one...`);
             const keypair = Keypair.generate();
-            fs.writeFileSync(path, JSON.stringify(Array.from(keypair.secretKey)));
+            // Ensure directory exists
+            fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
+            fs.writeFileSync(absolutePath, JSON.stringify(Array.from(keypair.secretKey)));
             return keypair;
         }
     } catch (error) {
-        console.error('加载密钥对时出错:', error);
-        const keypair = Keypair.generate();
-        return keypair;
+        console.error('Error loading keypair:', error);
+        throw error; // Let's throw the error instead of silently generating new keypair
     }
 }
 
 /**
- * 请求空投SOL
- * @param connection Solana连接对象
- * @param publicKey 接收空投的公钥
- * @param amount 空投数量（SOL）
+ * Request SOL airdrop
+ * @param connection Solana connection object
+ * @param publicKey Public key to receive airdrop
+ * @param amount Airdrop amount (SOL)
  */
 export async function requestAirdrop(
     connection: Connection, 
     publicKey: PublicKey, 
     amount: number = 2
 ): Promise<void> {
-    console.log(`请求空投 ${amount} SOL 到 ${publicKey.toBase58()}`);
+    console.log(`Requesting airdrop of ${amount} SOL to ${publicKey.toBase58()}`);
     const signature = await connection.requestAirdrop(publicKey, amount * LAMPORTS_PER_SOL);
     await connection.confirmTransaction(signature);
-    console.log(`成功获得空投: ${signature}`);
+    console.log(`Airdrop successful: ${signature}`);
 }
 
 /**
- * 确保钱包有足够的SOL余额
- * @param connection Solana连接对象
- * @param payer 支付账户
- * @param minBalance 最小余额（SOL）
+ * Ensure wallet has sufficient SOL balance
+ * @param connection Solana connection object
+ * @param payer Payer account
+ * @param minBalance Minimum balance (SOL)
  */
 export async function ensureSufficientBalance(
     connection: Connection,
@@ -84,12 +92,12 @@ export async function ensureSufficientBalance(
 }
 
 /**
- * 创建关联代币账户的指令（如果不存在）
- * @param connection Solana连接对象
- * @param payer 支付账户
- * @param mint 代币铸造地址
- * @param owner 代币账户所有者
- * @returns 创建ATA的指令（如果需要），否则返回null
+ * Create Associated Token Account instruction (if it doesn't exist)
+ * @param connection Solana connection object
+ * @param payer Payer account
+ * @param mint Token mint address
+ * @param owner Token account owner
+ * @returns ATA creation instruction (if needed), otherwise returns null
  */
 export async function createATAIfNeeded(
     connection: Connection,
@@ -116,12 +124,12 @@ export async function createATAIfNeeded(
 }
 
 /**
- * 批量创建ATA并执行交易
- * @param connection Solana连接对象
- * @param payer 支付账户
- * @param mints 需要创建ATA的代币列表
- * @param owner ATA所有者
- * @returns ATA地址映射
+ * Batch create ATAs and execute transaction
+ * @param connection Solana connection object
+ * @param payer Payer account
+ * @param mints Token mint list for ATA creation
+ * @param owner ATA owner
+ * @returns ATA address mapping
  */
 export async function setupATAs(
     connection: Connection,
@@ -147,9 +155,9 @@ export async function setupATAs(
         }
     }
     
-    // 如果有ATA创建指令，执行交易
+    // If there are ATA creation instructions, execute transaction
     if (transaction.instructions.length > 0) {
-        console.log('批量创建ATA...');
+        console.log('Creating batch ATAs...');
         const { blockhash } = await connection.getLatestBlockhash();
         transaction.recentBlockhash = blockhash;
         transaction.feePayer = payer.publicKey;
@@ -158,39 +166,39 @@ export async function setupATAs(
             preflightCommitment: 'confirmed'
         });
         await connection.confirmTransaction(signature);
-        console.log(`ATA创建成功: ${signature}`);
+        console.log(`ATA creation successful: ${signature}`);
     }
     
     return ataMap;
 }
 
 /**
- * 常用代币地址
+ * Common token addresses
  */
 export const COMMON_TOKENS = {
-    SOL: new PublicKey('So11111111111111111111111111111111111111112'), // 原生SOL包装代币
+    SOL: new PublicKey('So11111111111111111111111111111111111111112'), // Native SOL wrapped token
     USDC: new PublicKey('EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v'), // USDC
     USDT: new PublicKey('Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB'), // USDT
 };
 
 /**
- * 常用程序ID
+ * Common program IDs
  */
 export const COMMON_PROGRAM_IDS = {
     TOKEN_PROGRAM: TOKEN_PROGRAM_ID,
     ASSOCIATED_TOKEN_PROGRAM: ASSOCIATED_TOKEN_PROGRAM_ID,
     SYSTEM_PROGRAM: SystemProgram.programId,
     PUMP_AMM: new PublicKey('pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA'),
-    DLMM: new PublicKey('LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo'), // Meteora DLMM 程序
+    DLMM: new PublicKey('LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo'), // Meteora DLMM Program
 };
 
 /**
- * 将 SOL 包装成 wSOL 并转入关联代币账户
- * @param connection Solana连接对象
- * @param payer 支付账户
- * @param amount 要包装的SOL数量
- * @param owner wSOL ATA的所有者（默认为支付者）
- * @returns wSOL ATA地址
+ * Wrap SOL to wSOL and transfer to associated token account
+ * @param connection Solana connection object
+ * @param payer Payer account
+ * @param amount Amount of SOL to wrap
+ * @param owner wSOL ATA owner (defaults to payer)
+ * @returns wSOL ATA address
  */
 export async function wrapSOLToATA(
     connection: Connection,
@@ -198,9 +206,9 @@ export async function wrapSOLToATA(
     amount: number,
     owner: PublicKey = payer.publicKey
 ): Promise<PublicKey> {
-    console.log(`将 ${amount} SOL 包装成 wSOL...`);
+    console.log(`Wrapping ${amount} SOL to wSOL...`);
     
-    // 获取或创建 wSOL ATA
+    // Get or create wSOL ATA
     const { instruction: createATAInstruction, address: wsolATA } = await createATAIfNeeded(
         connection,
         payer.publicKey,
@@ -210,12 +218,12 @@ export async function wrapSOLToATA(
     
     const transaction = new Transaction();
     
-    // 如果需要创建 ATA，添加创建指令
+    // If ATA creation needed, add instruction
     if (createATAInstruction) {
         transaction.add(createATAInstruction);
     }
     
-    // 添加转账指令（将 SOL 转到 wSOL ATA）
+    // Add transfer instruction (Transfer SOL to wSOL ATA)
     transaction.add(
         SystemProgram.transfer({
             fromPubkey: payer.publicKey,
@@ -224,7 +232,7 @@ export async function wrapSOLToATA(
         })
     );
     
-    // 执行交易
+    // Execute transaction
     const { blockhash } = await connection.getLatestBlockhash();
     transaction.recentBlockhash = blockhash;
     transaction.feePayer = payer.publicKey;
@@ -234,41 +242,41 @@ export async function wrapSOLToATA(
             preflightCommitment: 'confirmed'
         });
         await connection.confirmTransaction(signature);
-        console.log(`成功将 ${amount} SOL 包装成 wSOL: ${signature}`);
-        console.log(`wSOL ATA 地址: ${wsolATA.toBase58()}`);
+        console.log(`Successfully wrapped ${amount} SOL to wSOL: ${signature}`);
+        console.log(`wSOL ATA address: ${wsolATA.toBase58()}`);
         return wsolATA;
     } catch (error) {
-        console.error('包装 SOL 时出错:', error);
+        console.error('Error wrapping SOL:', error);
         throw error;
     }
 }
 
 /**
- * 从 wSOL ATA 中解包装 SOL
- * @param connection Solana连接对象
- * @param payer 支付账户
- * @param owner wSOL ATA的所有者（默认为支付者）
- * @returns 交易签名
+ * Unwrap SOL from wSOL ATA
+ * @param connection Solana connection object
+ * @param payer Payer account
+ * @param owner wSOL ATA owner (defaults to payer)
+ * @returns Transaction signature
  */
 export async function unwrapSOLFromATA(
     connection: Connection,
     payer: Keypair,
     owner: PublicKey = payer.publicKey
 ): Promise<string> {
-    console.log('解包装 wSOL 为 SOL...');
+    console.log('Unwrapping wSOL to SOL...');
     
     const wsolATA = await getAssociatedTokenAddress(COMMON_TOKENS.SOL, owner);
     
     try {
-        // 检查 ATA 是否存在
+        // Check if ATA exists
         await getAccount(connection, wsolATA);
     } catch (error) {
-        throw new Error(`wSOL ATA 不存在: ${wsolATA.toBase58()}`);
+        throw new Error(`wSOL ATA does not exist: ${wsolATA.toBase58()}`);
     }
     
     const transaction = new Transaction();
     
-    // 添加关闭账户指令（这会将剩余的 wSOL 转换回 SOL）
+    // Add close account instruction (This converts remaining wSOL back to SOL)
     transaction.add(
         createCloseAccountInstruction(
             wsolATA,
@@ -278,7 +286,7 @@ export async function unwrapSOLFromATA(
         )
     );
     
-    // 执行交易
+    // Execute transaction
     const { blockhash } = await connection.getLatestBlockhash();
     transaction.recentBlockhash = blockhash;
     transaction.feePayer = payer.publicKey;
@@ -288,81 +296,81 @@ export async function unwrapSOLFromATA(
             preflightCommitment: 'confirmed'
         });
         await connection.confirmTransaction(signature);
-        console.log(`成功解包装 wSOL: ${signature}`);
+        console.log(`Successfully unwrapped wSOL: ${signature}`);
         return signature;
     } catch (error) {
-        console.error('解包装 wSOL 时出错:', error);
+        console.error('Error unwrapping wSOL:', error);
         throw error;
     }
 }
 
 /**
- * 创建设置计算单元限制的指令
- * @param units 计算单元限制数量
- * @returns 设置计算单元限制的指令
+ * Create compute unit limit instruction
+ * @param units Compute unit limit amount
+ * @returns Compute unit limit instruction
  */
 export function createComputeUnitLimitInstruction(units: number): TransactionInstruction {
-    console.log(`设置计算单元限制: ${units}`);
+    console.log(`Setting compute unit limit: ${units}`);
     return ComputeBudgetProgram.setComputeUnitLimit({
         units: units,
     });
 }
 
 /**
- * 创建设置计算单元价格的指令
- * @param microLamports 每个计算单元的价格（微lamports）
- * @returns 设置计算单元价格的指令
+ * Create compute unit price instruction
+ * @param microLamports Price per compute unit (in micro-lamports)
+ * @returns Compute unit price instruction
  */
 export function createComputeUnitPriceInstruction(microLamports: number): TransactionInstruction {
-    console.log(`设置计算单元价格: ${microLamports} micro-lamports`);
+    console.log(`Setting compute unit price: ${microLamports} micro-lamports`);
     return ComputeBudgetProgram.setComputeUnitPrice({
         microLamports: microLamports,
     });
 }
 
 /**
- * 为交易添加计算单元优化指令
- * @param transaction 要优化的交易
- * @param computeUnitLimit 计算单元限制（可选）
- * @param computeUnitPrice 计算单元价格（微lamports，可选）
- * @returns 添加了CU指令的交易
+ * Add compute unit optimization instructions to transaction
+ * @param transaction Transaction to optimize
+ * @param computeUnitLimit Compute unit limit (optional)
+ * @param computeUnitPrice Compute unit price in micro-lamports (optional)
+ * @returns Transaction with added CU instructions
  */
 export function addComputeUnitInstructions(
     transaction: Transaction,
     computeUnitLimit?: number,
     computeUnitPrice?: number
 ): Transaction {
-    // 添加计算单元限制指令（如果提供）
+    // Add compute unit limit instruction (if provided)
     if (computeUnitLimit !== undefined) {
         const limitInstruction = createComputeUnitLimitInstruction(computeUnitLimit);
-        transaction.instructions.unshift(limitInstruction); // 添加到开头
+        transaction.instructions.unshift(limitInstruction); // Add to beginning
     }
     
-    // 添加计算单元价格指令（如果提供）
+    // Add compute unit price instruction (if provided)
     if (computeUnitPrice !== undefined) {
         const priceInstruction = createComputeUnitPriceInstruction(computeUnitPrice);
-        transaction.instructions.unshift(priceInstruction); // 添加到开头
+        transaction.instructions.unshift(priceInstruction); // Add to beginning
     }
     
     return transaction;
 }
 
 /**
- * 计算单元的常用预设值
+ * Common compute unit configurations
  */
 export const COMPUTE_UNIT_CONFIGS = {
-    // 计算单元限制预设
+    // Compute unit limit presets
     LIMITS: {
-        LOW: 200000,      // 低复杂度交易
-        MEDIUM: 400000,   // 中等复杂度交易
-        HIGH: 800000,     // 高复杂度交易
-        MAX: 1400000,     // 最大限制
+        LOW: 200000,      // Low complexity transactions
+        MEDIUM: 400000,   // Medium complexity transactions
+        HIGH: 800000,     // High complexity transactions
+        MAX: 1400000,     // Maximum limit
     },
-    // 计算单元价格预设（微lamports）
+    // Compute unit price presets (micro-lamports)
     PRICES: {
-        NORMAL: 0,        // 正常网络状况
-        FAST: 10000,      // 快速确认
-        TURBO: 50000,     // 优先确认
-        ULTRA: 100000,    // 超高优先级
+        NORMAL: 0,        // Normal network conditions
+        FAST: 10000,      // Fast confirmation
+        TURBO: 50000,     // Priority confirmation
+        ULTRA: 100000,    // Ultra-high priority
     }
 };
