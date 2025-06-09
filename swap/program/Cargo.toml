@@ -1,0 +1,20 @@
+[package]
+name = "swap_program"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+pinocchio = "=0.8.4"
+pinocchio-log = "0.4.0"
+pinocchio-pubkey = "0.2.4"
+shank = "0.4.3"
+
+
+[features]
+no-entrypoint = []
+std = []
+test-default = ["no-entrypoint", "std"]
+bench-default = ["no-entrypoint", "std"]
