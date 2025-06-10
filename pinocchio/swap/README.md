@@ -1,34 +1,37 @@
 # DEX Swap Example 🔄
 
-This example demonstrates token swapping functionality across different DEXs, featuring **Pump AMM buy operations** and **DLMM swap operations**.
+This example demonstrates token swapping functionality across different DEXs, featuring **DLMM swap operations** and **Pump AMM buy operations**.
+
 
 ## 🎯 Core Features
 
-### 1. Pump AMM Buy Operations
+### 1. DLMM Swap Operations  
+- Execute swap operations on Meteora DLMM (Dynamic Liquidity Market Maker)
+- Liquidity bins-based price discovery
+- Concentrated liquidity trading support
+
+### 2. Pump AMM Buy Operations
 - Execute token buy operations on Pump.fun AMM
 - Support for SOL and other token swaps
 - Automatic protocol and creator fee handling
 
-### 2. DLMM Swap Operations  
-- Execute swap operations on Meteora DLMM (Dynamic Liquidity Market Maker)
-- Liquidity bins-based price discovery
-- Concentrated liquidity trading support
+
 
 ## 📁 Project Structure
 
 ```
 swap/
-├── program/              # Rust program source
+├── program/                # Rust program source
 │   └── src/
-│       ├── dex/         # DEX implementation modules
-│       │   ├── pump_amm/    # Pump AMM implementation
-│       │   └── dlmm/        # DLMM implementation
-│       ├── instruction/ # Instruction handling
-│       └── state/       # State management
-├── client/              # TypeScript client
+│       ├── dex/            # DEX implementation modules
+│       │   ├── dlmm/       # DLMM implementation
+│       │   └── pump_amm/   # Pump AMM implementation
+│       ├── instruction/    # Instruction handling
+│       └── state/          # State management
+├── client/                 # TypeScript client
 │   └── src/
-│       ├── arb_pump_test.ts    # Pump AMM test example
 │       ├── arb_dlmm_test.ts    # DLMM test example
+│       ├── arb_pump_test.ts    # Pump AMM test example
 │       ├── utils.ts            # Utility functions
 │       └── generated/          # Auto-generated types and instructions
 └── README.md
@@ -36,38 +39,61 @@ swap/
 
 ## 🚀 Quick Start
 
-### 1. Setup Environment
-```bash
-# Install dependencies
-yarn install
+### 1. Build Program
 
-# Build program
+Ensure you are in the "program" folder
+```sh
 cd program
+```
+
+Build program
+```sh
 cargo build-sbf
 ```
 
-### 2. Deploy Program
-```bash
-# Copy keypair
-cp swap_program-keypair.json ./program/target/deploy/swap_program-keypair.json
+Copy and change the keypair in "target" folder from the newly generated one to the one that came with this example
+```sh
+cp ../swap_program-keypair.json target/deploy/swap_program-keypair.json
+```
 
-# Get program address
+Generate program address from the keypair copied above
+```sh
 solana address -k target/deploy/swap_program-keypair.json
+```
 
-# Update program ID in lib.rs
+Update the program ID with address generated from the keypair in /program/src/lib.rs
+```bash
+pinocchio_pubkey::declare_id!("D7Nv2Yt9i7r1xSGgTZo9zGHgZ8wwiAX13nFodBXdpox4");
+```
+
+### 2. Deploy Program To Localnet (Surfnet) With Surfpool
+
+```sh
+surfpool start --watch
 ```
 
 ### 3. Running Tests
 
-#### Pump AMM Test
-```bash
-yarn run pump-test
+Ensure you are in the "client" folder
+```sh
+cd client
+```
+
+Install dependencies
+```sh
+yarn install
 ```
 
 #### DLMM Test  
-```bash
+```sh
 yarn run dlmm-test
 ```
+
+#### Pump AMM Test
+```sh
+yarn run pump-test
+```
+
 
 ## 💡 Usage Examples
 
@@ -143,5 +169,3 @@ const ix = createDLMMSwapInstruction(accounts, swapArgs);
 2. **Account Validation**: Verify all accounts validity and permissions
 3. **Sufficient Balance**: Ensure adequate SOL and token balances
 
----
-*Built with Surfpool Framework*
