@@ -1,0 +1,28 @@
+[package]
+name = "dexs_example"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+anyhow = "1.0.98"
+reqwest =  { version = "0.12.19", features = ["blocking", "json"] }
+clap = { version = "4.5.32", features = ["derive"] }
+serde = "1.0.219"
+serde_json = "1.0.140"
+solana-client = "2.2.1"
+solana-commitment-config = "2.2.1"
+solana-hash = "2.2.1"
+solana-instruction = "2.2.1"
+solana-keypair = "2.2.1"
+solana-message = "2.2.1"
+solana-native-token = "2.3.0"
+solana-pubkey = "2.2.1"
+solana-signer = "2.2.1"
+solana-system-interface = "1.0.0"
+solana-sysvar-id = "2.2.1"
+solana-transaction = "2.2.1"
+spl-associated-token-account = "7.0.0"
+spl-token = "8.0.0"
+tokio = { version = "1.44.1", features = ["full"] }
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
