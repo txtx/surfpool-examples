@@ -1,4 +1,4 @@
-use crate::prelude::*;
+use crate::prelude::{pubkey, Pubkey};
 
 pub const DEFAULT_RPC_URL: &str = "127.0.0.1:8899";
 
@@ -40,3 +40,4 @@ pub const LIFINITY_SOL_USDC_POOL: LifinityPoolInfo = LifinityPoolInfo {
     pool_token_wsol: pubkey!("FzMQ1s9vQs4v6wyjVoVTFoDBJX2Qjr5ZsDGi1SA8a8hy"), // WSOL pool token
 };
 
+pub const JUP_AGGV6_PROGRAM: Pubkey = pubkey!("JUP6LkbZbjS1jKKwapdHNy74zcZ3tLUZoi5QNyVTaV4");

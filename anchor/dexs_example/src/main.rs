@@ -1,10 +1,13 @@
-mod args;
-mod cmd;
-mod constants;
-mod utils;
+pub mod prelude;
+pub mod args;
+pub mod cmd;
+pub mod constants;
+pub mod utils;
+pub mod instructions;
 
 use crate::args::{App, Command};
-use crate::cmd::{simulate_lifi,simulate_jup,simulate_dflow, simulate_solfi};
+use crate::cmd::*;
+use crate::prelude::{Result};
 use clap::Parser;
 use tracing_subscriber::layer::SubscriberExt;
 use tracing_subscriber::util::SubscriberInitExt;
@@ -20,10 +23,10 @@ async fn main() -> Result<()>{
     let cmd = App::parse().command;
  
     match cmd {
-        Command::SimulateLiFi { amount } => simulate(amount)?,
-        Command::SimulateSolFi { amount } => simulate(amount)?,
-        Command::SimulateJup { amount } => simulate(amount)?,
-        Command::SimulateDFlow { amount } => simulate(amount)?,
+        Command::SimulateLiFi { amount } => simulate_lifi(amount).await?,
+        Command::SimulateSolFi { amount } => simulate_solfi(amount).await?,
+        Command::SimulateJup { amount } => simulate_jup(amount).await?,
+        Command::SimulateDFlow { amount } => simulate_dflow(amount).await?,
     }
     Ok(())
 }

@@ -1,7 +1,8 @@
 use std::io::stdout;
-use constants::{SOLFI_MARKET, SOLFI_PROGRAM, USDC, WSOL, DEFAULT_SWAP_AMOUNT, USDC_DECIMALS};
+use crate::constants::{SOLFI_SOL_USDC_MARKET, SOLFI_PROGRAM, USDC, WSOL, DEFAULT_SWAP_AMOUNT, USDC_DECIMALS};
 use crate::instructions::solfi::create_solfi_swap_ix;
 use crate::utils::get_token_account_balance;
+use crate::prelude::{Result};
 use crate::prelude::*;
 
 
@@ -10,7 +11,7 @@ struct LatestBlockhash {
     slot: AtomicU64,
 }
 
-pub fn simulate_solfi(amount: Option<u64>) -> Result<()> {
+pub async fn simulate_solfi(amount: Option<f64>) -> Result<()> {
     let user_keypair = Keypair::new();
     let user = user_keypair.pubkey();
     let rpc_url = "http://127.0.0.1:8899";
@@ -21,6 +22,7 @@ pub fn simulate_solfi(amount: Option<u64>) -> Result<()> {
 
     let rpc_client_clone = rpc_client.clone();
     
+    // // i want to remove all this complex blockhash logic lol
     let latest_blockhash = Arc::new(LatestBlockhash {
         blockhash: RwLock::new(Hash::default()),
         slot: AtomicU64::new(0),
@@ -39,18 +41,15 @@ pub fn simulate_solfi(amount: Option<u64>) -> Result<()> {
             tokio::time::sleep(Duration::from_millis(500)).await;
         }
     }); 
-    
-    let amount: f64 = 0.1;
 
-    let swap_amount_in_lamports = sol_to_lamports(amount);
+    const DEFAULT_SWAP_AMOUNT: f64 = 10.0;
+
+    let swap_amount_in_lamports = sol_to_lamports(amount.unwrap_or(DEFAULT_SWAP_AMOUNT));
     
     let wsol_ata = get_associated_token_address(&user, &WSOL);
     let usdc_ata = get_associated_token_address(&user, &USDC);
 
-    let usdc_starting = get_token_account_balance(&usdc_ata, None)
-        .await
-        .unwrap()
-        .ui_amount;
+    let usdc_starting = get_token_account_balance(&usdc_ata, None).await;
 
     loop {
         let slot = latest_blockhash.slot.load(Ordering::Relaxed);
@@ -79,21 +78,22 @@ pub fn simulate_solfi(amount: Option<u64>) -> Result<()> {
                     ),
                     transfer(&user, &wsol_ata, swap_amount_in_lamports),
                     sync_native(&spl_token::id(), &wsol_ata).unwrap(),
-                    create_swap_ix(&SOLFI_MARKET, &user, &WSOL, &USDC, swap_amount_in_lamports),
+                    create_solfi_swap_ix(& SOLFI_SOL_USDC_MARKET, &user, &WSOL, &USDC, swap_amount_in_lamports),
                 ],
                 Some(&user),
             ),
             *recent_blockhash
         );
 
-        let sol_in = lamports_to_sol(swap_amount_in_lamports);
+        let sol_in = lamports_to_sol(amount.unwrap_or(DEFAULT_SWAP_AMOUNT) as u64);
+        let usd_ata = get_token_account_balance(&usdc_ata, None).await;
 
-        match rpc_client_clone.send_transaction(&tx) {
+        match rpc_client.send_transaction(&tx) {
             Ok(sig) => {
-                let usdc_out = get_token_account_balance(&usdc_ata, None) - usdc_starting;
+                let usdc_out = usd_ata - usdc_starting;
                 println!(
                     "Market: {}, SOL In: {:.4}, USDC Out: {:.4}, Tx Hash: {}",
-                    SOLFI_MARKET,
+                     SOLFI_SOL_USDC_MARKET,
                     sol_in,
                     usdc_out as f64 / 10f64.powi(USDC_DECIMALS),
                     sig,
@@ -101,11 +101,12 @@ pub fn simulate_solfi(amount: Option<u64>) -> Result<()> {
             }
             Err(err) => {
                     println!(
-                        "Market: {}, SOL In: {:.4}, USDC Out: None, Error: {}",
-                        SOLFI_MARKET,
+                        "Market: {}, SOL In: {:.4}, USDC Out: None, Error: {:?}",
+                         SOLFI_SOL_USDC_MARKET,
                         sol_in,
-                        err.err
+                        err
                     );
             }
         }
+    Ok(())
 }

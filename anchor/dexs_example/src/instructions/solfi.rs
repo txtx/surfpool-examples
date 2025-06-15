@@ -1,7 +1,4 @@
 use crate::prelude::*;
-use solana_instruction::{Instruction, account_meta::{AccountMeta}};
-use solana_sysvar_id::ID as sysvarID;
-use spl_associated_token_account::get_associated_token_address;
 use crate::constants::{SOLFI_PROGRAM};
 
 fn create_instruction_data(discriminator: u8, amount_in: u64) -> Vec<u8> {

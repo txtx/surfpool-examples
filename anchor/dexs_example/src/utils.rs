@@ -45,7 +45,7 @@ pub struct ContextValue<T> {
 pub async fn get_token_account_balance(
     pubkey: &Pubkey,
     commitment: Option<CommitmentConfig>,
-) -> Result<Option<UiTokenAmount>> {
+) -> u64 {
     let client = Client::new();
 
     let request_body = json!({
@@ -64,10 +64,17 @@ pub async fn get_token_account_balance(
         .post("http://127.0.0.1:8899")
         .json(&request_body)
         .send()
-        .await?;
+        .await.unwrap();
 
-    let result: RpcResponse<ContextValue<UiTokenAmount>> = response.json().await?;
+    let result: RpcResponse<ContextValue<UiTokenAmount>> = response.json().await.expect("Failed to parse response JSON");;
     println!("Token Account Balance Response: {:#?}", result);
+    let ui_amount = result
+        .result
+        .expect("Missing result")
+        .value
+        .ui_amount
+        .unwrap_or(0.0);
 
-    Ok(result.result.map(|r| r.value))
+    ui_amount as u64
 }
+
