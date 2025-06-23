@@ -8,7 +8,7 @@ signer "sender" "svm::secret_key" {
 }
 
 variable "program" {
-    description = "The program to deploy"
+    description = "The program to to invoke."
     value = svm::get_program_from_anchor_project("split_token_transfer")
 }
 
