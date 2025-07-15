@@ -117,7 +117,7 @@ async function testDLMMArbitrage() {
         );
 
         console.log(`✅ DLMM Swap Success: ${txSignature}`);
-        console.log(`🔍 tx: https://solscan.io/tx/${txSignature}?cluster=custom&customUrl=https://engine.mirror.ad/rpc/246317e7-f583-4769-b724-8f45cbf45f4b`);
+        console.log(`🔍 tx: https://solscan.io/tx/${txSignature}?cluster=custom&customUrl=http://127.0.0.1:8899/`);
 
     } catch (error) {
         console.error('❌ Error executing DLMM transaction:', error);
