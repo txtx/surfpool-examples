@@ -32,6 +32,15 @@ pub struct SplitTokenTransfer<'info> {
     #[account(
         init_if_needed,
         payer = sender,
+        seeds = [b"custom", sender.key().as_ref()],
+        bump,
+        space = 8 + CustomAccount::INIT_SPACE,
+    )]
+    pub custom: Account<'info, CustomAccount>,
+
+    #[account(
+        init_if_needed,
+        payer = sender,
         associated_token::mint = mint,
         associated_token::authority = recipient_1,
         associated_token::token_program = token_program,
@@ -49,6 +58,12 @@ pub struct SplitTokenTransfer<'info> {
     pub system_program: Program<'info, System>,
     pub associated_token_program: Program<'info, AssociatedToken>,
     pub token_program: Interface<'info, TokenInterface>,
+}
+
+#[account]
+#[derive(InitSpace)]
+pub struct CustomAccount {
+    pub my_custom_data: u64,
 }
 
 impl<'info> SplitTokenTransfer<'info> {
@@ -83,7 +98,6 @@ impl<'info> SplitTokenTransfer<'info> {
         transfer_checked(transfer_2_cpi_ctx, recipient_2_amount, self.mint.decimals)?;
 
         msg!("Split transfer complete.");
-
         Ok(())
     }
 }
