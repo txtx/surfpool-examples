@@ -4,7 +4,7 @@ pub mod cmd;
 pub mod constants;
 pub mod utils;
 pub mod instructions;
-
+ 
 use crate::args::{App, Command};
 use crate::cmd::*;
 use crate::prelude::{Result};
@@ -22,11 +22,46 @@ async fn main() -> Result<()>{
 
     let cmd = App::parse().command;
  
-    match cmd {
-        Command::SimulateLiFi { amount } => simulate_lifi(amount).await?,
-        Command::SimulateSolFi { amount } => simulate_solfi(amount).await?,
-        Command::SimulateJup { amount } => simulate_jup(amount).await?,
-        Command::SimulateDFlow { amount } => simulate_dflow(amount).await?,
-    }
+   Commands::Simulate { mode } => match mode {
+            SimulateMode::Dex { dex, amount } => {
+                println!("Simulating direct DEX swap on {} with amount {}", dex, amount);
+            }
+
+            SimulateMode::Aggregator { aggregator } => match aggregator {
+                Aggregators::Jupiter {
+                    input_mint,
+                    output_mint,
+                    amount_in,
+                    min_amount_out,
+                } => {
+                    println!(
+                        "Simulating Jupiter swap: {} -> {} | amount_in={} | min_out={:?}",
+                        input_mint, output_mint, amount_in, min_amount_out
+                    );
+                }
+                // Aggregators::Okdex {
+                //     input_mint,
+                //     output_mint,
+                //     amount_in,
+                //     min_amount_out,
+                // } => {
+                //     println!(
+                //         "Simulating OkDex swap: {} -> {} | amount_in={} | min_out={:?}",
+                //         input_mint, output_mint, amount_in, min_amount_out
+                //     );
+                // }
+                // Aggregators::Dflow {
+                //     input_mint,
+                //     output_mint,
+                //     amount_in,
+                //     min_amount_out,
+                // } => {
+                //     println!(
+                //         "Simulating OkDex swap: {} -> {} | amount_in={} | min_out={:?}",
+                //         input_mint, output_mint, amount_in, min_amount_out
+                //     );
+                // }
+            },
+        },
     Ok(())
 }

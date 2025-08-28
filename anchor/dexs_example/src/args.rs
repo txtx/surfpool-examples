@@ -3,29 +3,74 @@ use clap::{Parser, Subcommand};
 
 #[derive(Debug, Subcommand)]
 pub enum Command {
-    /// Simulate a WSOL -> USDC swap in all the a solfi wsol/usdc pool
-    SimulateSolFi {
-        /// Amount of SOL to swap to USDC
+  
+}   
+
+enum SimulateMode {
+    ///Simulate on a single DEX
+    Dex {
+        /// The DEX name (e.g saros, raydium, )
         #[arg(short, long)]
-        amount: Option<f64>,
+        dex: String
+        
+        /// Amount in (raw, e.g. 0.1 SOL)
+        #[arg(short, long)]
+        amount: f64,
+    }
+
+    
+    /// Simulate via an aggregator (e.g. Jupiter, OkDex)
+    Aggregator {
+        #[command(subcommand)]
+        aggregator: Aggregators,
     },
-    /// Simulate a WSOL -> USDC swap in all the a lifi wsol/usdc pool
-    SimulateLiFi {
-        /// Amount of SOL to swap to USDC
-        #[arg(short, long)]
-        amount: Option<f64>,
+}
+
+
+#[derive(Subcommand, Debug)]
+enum Aggregators {
+    /// Simulate via Jupiter aggregator
+    Jupiter {
+        #[arg(long)]
+        input_mint: String,
+
+        #[arg(long)]
+        output_mint: String,
+
+        #[arg(long)]
+        amount_in: f64,
+
+        #[arg(long)]
+        min_amount_out: Option<f64>,
     },
-    /// Simulate a WSOL -> USDC swap in all the wsol/usdc pools, aggregated 
-    SimulateJup {
-        /// Amount of SOL to swap to USDC
-        #[arg(short, long)]
-        amount: Option<f64>,
+
+    /// Simulate via OkDex aggregator
+    Okdex {
+        #[arg(long)]
+        input_mint: String,
+
+        #[arg(long)]
+        output_mint: String,
+
+        #[arg(long)]
+        amount_in: f64,
+
+        #[arg(long)]
+        min_amount_out: Option<f64>,
     },
-    /// Simulate a WSOL -> USDC swap in all the wsol/usdc pools, aggregated
-    SimulateDFlow {
-        /// Amount of SOL to swap to USDC
-        #[arg(short, long)]
-        amount: Option<f64>,
+    /// Simulate via Dflow aggregator
+    Dflow {
+        #[arg(long)]
+        input_mint: String,
+
+        #[arg(long)]
+        output_mint: String,
+
+        #[arg(long)]
+        amount_in: f64,
+
+        #[arg(long)]
+        min_amount_out: Option<f64>,
     },
 }
 

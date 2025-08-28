@@ -6,59 +6,12 @@ use crate::prelude::{Result};
 use crate::prelude::*;
 
 
-struct LatestBlockhash {
-    blockhash: RwLock<Hash>,
-    slot: AtomicU64,
-}
-
 pub async fn simulate_solfi(amount: Option<f64>) -> Result<()> {
-    let user_keypair = Keypair::new();
-    let user = user_keypair.pubkey();
-    let rpc_url = "http://127.0.0.1:8899";
-    let rpc_client = Arc::new(RpcClient::new_with_commitment(
-        rpc_url.to_string(),
-        CommitmentConfig::confirmed(),
-    ));
-
-    let rpc_client_clone = rpc_client.clone();
-    
-    // // i want to remove all this complex blockhash logic lol
-    let latest_blockhash = Arc::new(LatestBlockhash {
-        blockhash: RwLock::new(Hash::default()),
-        slot: AtomicU64::new(0),
-    });
-
-    let latest_blockhash_clone = latest_blockhash.clone();
-    tokio::spawn(async move {
-        loop {
-            if let Ok((blockhash, slot)) =
-                rpc_client_clone.get_latest_blockhash_with_commitment(CommitmentConfig::confirmed())
-            {
-                let mut blockhash_write = latest_blockhash_clone.blockhash.write().await;
-                *blockhash_write = blockhash;
-                latest_blockhash_clone.slot.store(slot, Ordering::Relaxed);
-            }
-            tokio::time::sleep(Duration::from_millis(500)).await;
-        }
-    }); 
-
-    const DEFAULT_SWAP_AMOUNT: f64 = 10.0;
 
     let swap_amount_in_lamports = sol_to_lamports(amount.unwrap_or(DEFAULT_SWAP_AMOUNT));
     
     let wsol_ata = get_associated_token_address(&user, &WSOL);
     let usdc_ata = get_associated_token_address(&user, &USDC);
-
-    let usdc_starting = get_token_account_balance(&usdc_ata, None).await;
-
-    loop {
-        let slot = latest_blockhash.slot.load(Ordering::Relaxed);
-        if slot != 0 {
-            break;
-        }
-        tokio::time::sleep(Duration::from_millis(100)).await;
-    }
-    let recent_blockhash = latest_blockhash.blockhash.read().await;
 
     let tx = Transaction::new(
             &[&user_keypair],
@@ -78,7 +31,7 @@ pub async fn simulate_solfi(amount: Option<f64>) -> Result<()> {
                     ),
                     transfer(&user, &wsol_ata, swap_amount_in_lamports),
                     sync_native(&spl_token::id(), &wsol_ata).unwrap(),
-                    create_solfi_swap_ix(& SOLFI_SOL_USDC_MARKET, &user, &WSOL, &USDC, swap_amount_in_lamports),
+                    create_solfi_swap_ix(&SOLFI_SOL_USDC_MARKET, &user, &WSOL, &USDC, swap_amount_in_lamports),
                 ],
                 Some(&user),
             ),
