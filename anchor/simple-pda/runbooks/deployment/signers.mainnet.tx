@@ -1,0 +1,14 @@
+
+// For mainnet deployment, use web wallets, hardware wallets or multisig to improve key security.
+
+signer "payer" "svm::web_wallet" {
+    description = "Pays fees for program deployments and operations and creates the Squad proposal"
+    // Optional: the public key of the signer can be enforced at runtime by setting an expected value
+    // expected_address = "zbBjhHwuqyKMmz8ber5oUtJJ3ZV4B6ePmANfGyKzVGV"
+}
+
+signer "authority" "svm::squads" {
+    description = "Can upgrade programs and manage critical ops via Squad multisig"
+    address = ""
+    initiator = signer.payer
+}

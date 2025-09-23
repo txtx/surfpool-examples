@@ -1,0 +1,3 @@
+signer "caller" "svm::web_wallet" {
+    description = "The account that will call the program"
+}

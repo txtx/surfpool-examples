@@ -1,0 +1,26 @@
+addon "svm" {
+    rpc_api_url = input.rpc_api_url
+    network_id = input.network_id
+}
+
+variable "program" {
+    description = "The program to to invoke."
+    value = svm::get_program_from_anchor_project("simple_pda")
+}
+
+action "call" "svm::process_instructions" {
+	signers = [signer.caller]
+    instruction {
+        program_idl = variable.program.idl
+        instruction_name = "run"
+        sender {
+            public_key = signer.caller.public_key
+        }
+    }
+}
+
+output "signature" {
+    description = "The signature of the transaction"
+    value = action.call.signature
+}
+

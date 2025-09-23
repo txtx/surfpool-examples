@@ -1,0 +1,4 @@
+signer "caller" "svm::secret_key" {
+    description = "The account that will call the program"
+    keypair_json = "~/.config/solana/id.json"
+}

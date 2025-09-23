@@ -1,0 +1,12 @@
+action "custom_account_subgraph" "svm::deploy_subgraph" {
+    program_id = action.deploy_simple_pda.program_id
+    program_idl = action.deploy_simple_pda.program_idl
+    block_height = 0 // action.deploy_simple_pda.block_height
+    pda {
+        type = "CustomAccount"
+        instruction {
+            name = "run"
+            account_name = "custom"
+        }
+    }
+}
