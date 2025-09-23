@@ -63,7 +63,9 @@ pub struct SplitTokenTransfer<'info> {
 #[account]
 #[derive(InitSpace)]
 pub struct CustomAccount {
-    pub my_custom_data: u64,
+    pub counter: u64,
+    #[max_len(100)]
+    pub message: String,
 }
 
 impl<'info> SplitTokenTransfer<'info> {
@@ -76,6 +78,9 @@ impl<'info> SplitTokenTransfer<'info> {
             self.sender_token_account.amount >= recipient_1_amount + recipient_2_amount,
             "Insufficient balance for split transfer"
         );
+
+        self.custom.counter += 1;
+        self.custom.message = format!("The counter is set to {}", self.custom.counter);
 
         // Transfer tokens from sender to recipient 1
         let transfer_1 = TransferChecked {
