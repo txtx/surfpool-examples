@@ -1,0 +1,5 @@
+
+signer "caller" "svm::web_wallet" {
+    description = "Calls the programs to fetch and update prices"
+    // See documentation for other options (mnemonic, etc): https://docs.surfpool.run/iac/svm/signers
+}

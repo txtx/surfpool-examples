@@ -5,6 +5,9 @@ runbooks:
   - name: deployment
     description: Deploy programs
     location: runbooks/deployment
+  - name: fetch-price
+    description: Fetch price from Pyth and store in PDA
+    location: runbooks/fetch-price
 environments:
   localnet:
       network_id: localnet

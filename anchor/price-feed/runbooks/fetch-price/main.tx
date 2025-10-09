@@ -1,0 +1,33 @@
+addon "svm" {
+    rpc_api_url = input.rpc_api_url
+    network_id = input.network_id
+}
+
+variable "program" {
+    value = svm::get_program_from_anchor_project("price_feed")
+}
+
+variable "price_feed" {
+    value = "7UVimffxr9ow1uXYxsr4LHAcV58mLzhmwaeKvJ1pjLiE"
+    editable = true
+}
+
+action "clear_account" "svm::setup_surfnet" {
+    reset_account {
+        public_key = variable.price_feed
+    }
+}
+
+action "call" "svm::process_instructions" {
+    signers = [signer.caller]
+    instruction {
+        program_idl = variable.program.idl
+        instruction_name = "fetch_price"
+        sender {
+            public_key = signer.caller.public_key
+        }
+        pyth_price_feed {
+            public_key = variable.price_feed
+        }
+    }
+}
