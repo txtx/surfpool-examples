@@ -1,0 +1,13 @@
+
+action "price_pda" "svm::deploy_subgraph" {
+    program_id = action.deploy_price_feed.program_id
+    program_idl = action.deploy_price_feed.program_idl
+    slot = action.deploy_price_feed.slot
+    pda {
+        type = "Price"
+        instruction {
+            name = "fetch_price"
+            account_name = "price"
+        }
+    }
+}
