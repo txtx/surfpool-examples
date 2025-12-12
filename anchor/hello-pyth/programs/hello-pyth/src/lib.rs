@@ -17,6 +17,8 @@ pub mod hello_pyth {
     pub mod client {
         use super::*;
         pub mod accounts {
+            use anchor_lang::prelude::Pubkey;
+
             pub fn report_pda_seed(sender: &Pubkey) -> Vec<&[u8]> {
                 vec![b"triangle", sender.as_ref()]
             }
