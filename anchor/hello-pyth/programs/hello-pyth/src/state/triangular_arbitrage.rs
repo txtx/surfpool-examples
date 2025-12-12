@@ -43,16 +43,17 @@ impl TriangularArbitrageReport {
         self.crossing_price = crossing_price.price;
         self.updated_at = clock.unix_timestamp;
 
-        // Combine exponents: -starting_expo + bridging_expo + crossing_expo
+        // Combine exponents: starting_expo + bridging_expo - crossing_expo
         let total_expo =
-            -starting_price.exponent + bridging_price.exponent + crossing_price.exponent;
+            starting_price.exponent + bridging_price.exponent - crossing_price.exponent;
 
         // Scale factor to bring result back to basis points (10000 = 100%)
         let scale_adjustment = 10_000i64 * 10i64.pow((-total_expo) as u32);
 
-        // Calculate: (bridging * crossing) / starting
-        let numerator = (bridging_price.price as i128) * (crossing_price.price as i128);
-        let result = numerator / (starting_price.price as i128);
+        // Calculate: (bridging * starting) / crossing
+        // This checks: (ETH/BTC * BTC/USD) / ETH/USD > 1 for arbitrage
+        let numerator = (bridging_price.price as i128) * (starting_price.price as i128);
+        let result = numerator / (crossing_price.price as i128);
 
         // Convert to PNL in basis points (subtract 10000 for 0% baseline)
         self.pnl = ((result * scale_adjustment as i128) / 10i64.pow(16) as i128) as i64 - 10_000;

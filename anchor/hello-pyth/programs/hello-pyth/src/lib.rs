@@ -4,7 +4,7 @@ use anchor_lang::prelude::*;
 use pyth_solana_receiver_sdk::price_update::{get_feed_id_from_hex, VerificationLevel};
 pub use state::triangular_arbitrage::*;
 
-declare_id!("7ah529NarmVZLTH2qdQLNwrMNSqo3JMFvMTgucpLmZuV");
+declare_id!("8wdNsi9gNJbkZwfiGPAvs6AomnBurxbXwhbEnxYQvCzJ");
 
 /// The price point TTL in seconds
 pub const MAXIMUM_AGE: u64 = 6000;
@@ -80,7 +80,7 @@ pub mod hello_pyth {
         report.update(&starting, &bridging, &crossing, &clock);
 
         msg!(
-            "Triangular Arbitrage | USD/ETH: (${:.2}) | SOL/ETH: ({:.8}) | SOL/USD: (${:.2}) | PNL: {} bps",
+            "Triangular Arbitrage | BTC/USD: (${:.2}) | ETH/BTC: ({:.8}) | ETH/USD: (${:.2}) | PNL: {} bps",
             starting.price as f64 * 10f64.powi(starting.exponent),
             bridging.price as f64 * 10f64.powi(bridging.exponent),
             crossing.price as f64 * 10f64.powi(crossing.exponent),
