@@ -1,0 +1,28 @@
+{
+  "context": {
+    "slot": 386104056,
+    "apiVersion": "3.0.6"
+  },
+  "value": {
+    "0": {
+      "4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo": {
+        "lamports": 1824120,
+        "owner": "rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ",
+        "executable": false,
+        "rentEpoch": 18446744073709552000,
+        "data": "IvEjY51+9M01pwwRFi+/Wg5/fS+W4Z+XsCJGoVaH7mcnlIl0SOZY3gHmLfbItKhf4aZ9tE3BLeXbMw96xmty3GWK/t8PSkFbQ602s0ZoCAAA6RyclQAAAAD4////IJw7aQAAAAAgnDtpAAAAAOBl7f9kCAAA+FTHlQAAAACMwQMXAAAAAAA=",
+        "parsedData": null
+      }
+    },
+    "1": {
+      "5JwbqPPMNpzE2jVAdobWo6m5gkhsDhRdGBo3FYbSfmaK": {
+        "lamports": 1823520,
+        "owner": "rec5EKMGg6MxZYaMdyBfgwp4d5rB9T1VQH5pJv5LtFJ",
+        "executable": false,
+        "rentEpoch": 18446744073709552000,
+        "data": "IvEjY51+9M1AB1vJintpTXWp1MoIr0kCvQZhYInCSHAS8T2R4vOUPAHJZFjTk/6d63p9Y6CsQeKJimendQ29FmZzJ54GyGjfCvSMUQAAAAAAuBYAAAAAAAD4////RglwZgAAAABFCXBmAAAAAKu7UQAAAAAAcxUAAAAAAADG5TsQAAAAAAA=",
+        "parsedData": null
+      }
+    }
+  }
+}

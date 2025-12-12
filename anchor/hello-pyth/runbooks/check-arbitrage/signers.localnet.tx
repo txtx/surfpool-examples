@@ -1,0 +1,6 @@
+
+signer "caller" "svm::secret_key" {
+    description = "Calls the programs to fetch and update prices"
+    keypair_json = "~/.config/solana/id.json"
+    // See documentation for other options (mnemonic, etc): https://docs.surfpool.run/iac/svm/signers
+}

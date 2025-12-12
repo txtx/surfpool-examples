@@ -1,0 +1,35 @@
+################################################################
+# Manage anchor deployment through Crypto Infrastructure as Code
+################################################################
+
+addon "svm" {
+    rpc_api_url = input.rpc_api_url
+    network_id = input.network_id
+}
+
+action "deploy_hello_pyth" "svm::deploy_program" {
+    description = "Deploy hello_pyth program"
+    program = svm::get_program_from_anchor_project("hello_pyth")
+    authority = signer.authority
+    payer = signer.payer
+    // Optional: if you want to deploy the program via a cheatcode when targeting a Surfnet, set `instant_surfnet_deployment = true`
+    // Deploying via a cheatcode will write the program data directly to the program account, rather than sending transactions.
+    // This will make deployments instantaneous, but is deviating from how the deployments will take place on devnet/mainnet.
+    instant_surfnet_deployment = true
+}
+
+
+action "hello_pyth_setup" "svm::setup_surfnet" {
+    stream_account {
+         public_key = "4cSM2e6rvbGQUFiJbqytoVMi5GgghSMr8LwVrT9VPSPo"
+         include_owned_accounts = true
+    }
+    stream_account {
+         public_key = "5JwbqPPMNpzE2jVAdobWo6m5gkhsDhRdGBo3FYbSfmaK"
+         include_owned_accounts = true
+    }
+    stream_account {
+         public_key = "42amVS4KgzR9rA28tkVYqVXjq9Qa8dcZQMbH5EYFX6XC"
+         include_owned_accounts = true
+    }
+}
