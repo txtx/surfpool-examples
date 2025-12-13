@@ -125,12 +125,13 @@ fn test_my_program() {
 
     let res = send_tx(&mut svm);
     let res = res.expect_err("transaction with invalid snapshot should have failed");
-    println!("Transaction failed as expected: {:?}", res);
+    println!(
+        "Transaction failed as expected:\n {}",
+        res.meta.pretty_logs()
+    );
 
     snapshot_loader.next_slot(&mut svm);
     let res = send_tx(&mut svm);
     let res = res.expect("transaction with valid snapshot should have succeeded");
     println!("Transaction succeeded with logs:\n{}", res.pretty_logs());
-
-    println!("Transaction result: {:?}", res);
 }
